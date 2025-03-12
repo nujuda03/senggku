@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Romantic Love Page</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #musicButton {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(255, 192, 203, 0.8);
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease;
+        }
+
+        #musicButton:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="myCanvas" width="800" height="600"></canvas>
+
+    <!-- Tombol Musik -->
+    <button id="musicButton">🎵</button>
+
+    <!-- Musik Romantis -->
+    <audio id="bgMusic" loop>
+        <source src="lagu.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- CreateJS -->
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+
+    <script>
+        const stage = new createjs.Stage("myCanvas");
+        const w = stage.canvas.width;
+        const h = stage.canvas.height;
+
+        // Teks Cinta di Tengah
+        const text = new createjs.Text(
+            "The longer I'm with you\nThe more I love you",
+            "bold 30px Arial",
+            "#fff"
+        );
+        text.textAlign = "center";
+        text.textBaseline = "middle";
+        text.x = w / 2;
+        text.y = h / 2;
+        text.shadow = new createjs.Shadow("pink", 2, 2, 10);
+        stage.addChild(text);
+
+        // Hati Pink Bertebaran
+        const heartCount = 100;
+        const hearts = [];
+
+        for (let i = 0; i < heartCount; i++) {
+            const heart = new createjs.Text("❤", "20px Arial", "pink");
+            heart.x = Math.random() * w;
+            heart.y = Math.random() * h;
+            heart.alpha = Math.random() * 0.8 + 0.2;
+            heart.scale = Math.random() * 0.8 + 0.3;
+            stage.addChild(heart);
+            hearts.push(heart);
+        }
+
+        // Animasi Love Turun
+        createjs.Ticker.framerate = 60;
+        createjs.Ticker.addEventListener("tick", () => {
+            for (let heart of hearts) {
+                heart.y += 1 * heart.scale;
+                if (heart.y > h) {
+                    heart.y = -20;
+                    heart.x = Math.random() * w;
+                }
+            }
+            stage.update();
+        });
+
+        // Musik Fade-in
+        const bgMusic = document.getElementById("bgMusic");
+        let isPlaying = false;
+
+        function playMusicSmoothly() {
+            bgMusic.volume = 0;
+            bgMusic.play();
+            let vol = 0;
+            const fade = setInterval(() => {
+                if (vol < 1) {
+                    vol += 0.05;
+                    bgMusic.volume = Math.min(vol, 1);
+                } else {
+                    clearInterval(fade);
+                }
+            }, 200);
+            isPlaying = true;
+        }
+
+        // Tombol Play/Pause Musik
+        const musicButton = document.getElementById("musicButton");
+        musicButton.addEventListener("click", () => {
+            if (!isPlaying) {
+                playMusicSmoothly();
+                musicButton.innerText = "⏸️";
+            } else {
+                bgMusic.pause();
+                isPlaying = false;
+                musicButton.innerText = "🎵";
+            }
+        });
+
+        // Autoplay on First Click
+        window.addEventListener("click", () => {
+            if (!isPlaying) {
+                playMusicSmoothly();
+                musicButton.innerText = "⏸️";
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
